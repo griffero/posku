@@ -49,8 +49,12 @@ Rails.application.configure do
   # Use memory cache store for Render free tier (single database)
   config.cache_store = :memory_store
 
+  # Disable Solid Cache in production (using memory store instead)
+  config.solid_cache.connects_to = nil if config.respond_to?(:solid_cache)
+
   # Use Solid Queue with primary database
   config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :primary } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

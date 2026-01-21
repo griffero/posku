@@ -19,6 +19,9 @@ bundle exec rails assets:clean
 # Run database migrations
 bundle exec rails db:migrate
 
+# Run solid_queue and solid_cache migrations on primary database
+bundle exec rails db:migrate:all || true
+
 # Seed the database if it's empty
 bundle exec rails runner "
   if Terminal.count == 0
