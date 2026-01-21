@@ -198,11 +198,12 @@ puts "Creating trips and fares..."
 # Create trips for the next 14 days
 base_date = Date.current
 
-# Price configuration per seat class (in CLP cents)
+# Price configuration per seat class (in CLP - stored as integer pesos)
+# CLP doesn't use cents, so we store full peso amounts
 base_prices = {
-  "classic" => 5_000_00,      # $5,000 CLP
-  "semi_cama" => 8_000_00,    # $8,000 CLP
-  "salon_cama" => 15_000_00   # $15,000 CLP
+  "classic" => 5000,      # $5,000 CLP
+  "semi_cama" => 8000,    # $8,000 CLP
+  "salon_cama" => 15000   # $15,000 CLP
 }
 
 # Price multipliers by route distance
