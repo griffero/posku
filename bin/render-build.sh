@@ -3,7 +3,10 @@
 set -o errexit
 
 bundle install
-npm install
+
+# Clean npm cache and reinstall for Linux platform
+rm -rf node_modules package-lock.json
+npm install --include=optional
 npm run build
 npm run build:css
 
