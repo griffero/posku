@@ -16,13 +16,8 @@ bundle exec rails assets:precompile
 # Clean up old assets
 bundle exec rails assets:clean
 
-# Run database migrations
+# Run database migrations (includes Solid Queue tables)
 bundle exec rails db:migrate
-
-# Run solid_queue, solid_cache, and solid_cable migrations
-bundle exec rails db:migrate:queue || true
-bundle exec rails db:migrate:cache || true  
-bundle exec rails db:migrate:cable || true
 
 # Seed the database if it's empty
 bundle exec rails runner "
