@@ -124,7 +124,18 @@ class ReservationService
         amount_cents: @reservation.total_amount_cents,
         formatted: @reservation.formatted_total,
         currency: @reservation.currency
-      }
+      },
+      payment_intent: payment_intent_summary
     }
+  end
+
+  private
+
+  def payment_intent_summary
+    payment_intent = @reservation.payment_intents.order(created_at: :desc).first
+    return nil unless payment_intent
+
+    fintoc = FintocMockService.new
+    fintoc.payment_status(payment_intent)
   end
 end

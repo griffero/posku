@@ -14,6 +14,8 @@ module Api
       case event_type
       when "succeeded"
         fintoc.simulate_success(payment_intent)
+        # Confirm the reservation when payment succeeds
+        payment_intent.reservation.confirm! if payment_intent.status == "succeeded"
         message = "Pago confirmado"
       when "failed"
         fintoc.simulate_failure(payment_intent)

@@ -141,8 +141,12 @@ const error = computed(() => reservationStore.error)
 const paymentIntent = computed(() => reservationStore.paymentIntent)
 
 onMounted(async () => {
-  if (!paymentIntent.value) {
-    await reservationStore.loadReservation(locator.value)
+  // Load reservation to get payment intent
+  const reservation = await reservationStore.loadReservation(locator.value)
+  
+  // If reservation has payment_intent, set it in the store
+  if (reservation?.payment_intent) {
+    reservationStore.paymentIntent = reservation.payment_intent
   }
   
   // Poll for payment status changes
