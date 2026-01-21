@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     resources :payment_intents, param: :external_id, only: [:show] do
       member do
         post :start
+        post :simulate
       end
     end
 
