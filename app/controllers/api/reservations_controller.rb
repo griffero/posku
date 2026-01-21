@@ -2,7 +2,7 @@
 
 module Api
   class ReservationsController < BaseController
-    before_action :set_reservation, only: [:show, :update, :checkout, :cancel]
+    before_action :set_reservation, only: [:show, :update, :checkout, :destroy]
 
     # POST /api/reservations
     # Create a new reservation with seat hold
@@ -85,7 +85,7 @@ module Api
     end
 
     # DELETE /api/reservations/:locator
-    def cancel
+    def destroy
       if @reservation.status == "confirmed"
         render json: { error: "Cannot cancel confirmed reservation" }, status: :unprocessable_entity
         return

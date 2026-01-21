@@ -40,6 +40,9 @@ Rails.application.routes.draw do
     namespace :webhooks do
       post :fintoc_mock
     end
+
+    # Ticket PDF download
+    get "tickets/:locator", to: "tickets#show", as: :ticket
   end
 
   # Admin routes

@@ -160,7 +160,14 @@ function formatDate(dateStr) {
 }
 
 function downloadTicket() {
-  // In a real app, this would generate and download a PDF
-  alert('En una implementación real, aquí se descargaría el PDF del pasaje.\n\nCódigo: ' + reservation.value.locator_code)
+  if (!reservation.value?.locator_code) return
+  
+  // Download PDF from API
+  const link = document.createElement('a')
+  link.href = `/api/tickets/${reservation.value.locator_code}`
+  link.download = `pasaje_${reservation.value.locator_code}.pdf`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 </script>
