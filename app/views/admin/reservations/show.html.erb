@@ -1,0 +1,143 @@
+<div class="mb-8 flex justify-between items-center">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Reserva <%= @reservation.locator_code %></h1>
+    <p class="text-sm text-gray-500">Creada <%= @reservation.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+  </div>
+  <% if @reservation.status != 'cancelled' %>
+    <%= button_to "Cancelar Reserva", cancel_admin_reservation_path(@reservation), method: :post, data: { confirm: "¿Estás seguro de cancelar esta reserva?" }, class: "rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500" %>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Reservation Info -->
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Información de Reserva</h3>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Estado</dt>
+        <dd class="mt-1 sm:col-span-2">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
+            <%= case @reservation.status
+                when 'confirmed' then 'bg-green-100 text-green-800'
+                when 'held' then 'bg-yellow-100 text-yellow-800'
+                when 'cancelled' then 'bg-red-100 text-red-800'
+                else 'bg-gray-100 text-gray-800'
+                end %>">
+            <%= @reservation.status_label %>
+          </span>
+        </dd>
+      </div>
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Total</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 font-bold"><%= @reservation.formatted_total %></dd>
+      </div>
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Email</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @reservation.contact_email %></dd>
+      </div>
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Teléfono</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @reservation.contact_phone %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Trip Info -->
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Información del Viaje</h3>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Ruta</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
+          <%= @reservation.trip.route.origin_terminal.display_name %> →
+          <%= @reservation.trip.route.destination_terminal.display_name %>
+        </dd>
+      </div>
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Salida</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @reservation.trip.departure_at.strftime("%d/%m/%Y %H:%M") %></dd>
+      </div>
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Llegada</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @reservation.trip.arrival_at.strftime("%d/%m/%Y %H:%M") %></dd>
+      </div>
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Bus</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @reservation.trip.bus.bus_type_label %></dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<!-- Passengers & Seats -->
+<div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Pasajeros</h3>
+    </div>
+    <ul class="divide-y divide-gray-200">
+      <% @reservation.passengers.each do |passenger| %>
+        <li class="px-4 py-4">
+          <p class="text-sm font-medium text-gray-900"><%= passenger.full_name %></p>
+          <p class="text-sm text-gray-500"><%= passenger.document_type_label %>: <%= passenger.document_number %></p>
+          <p class="text-sm text-gray-500">Asiento: <%= passenger.seat_number %></p>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Asientos</h3>
+    </div>
+    <ul class="divide-y divide-gray-200">
+      <% @reservation.reservation_seats.each do |seat| %>
+        <li class="px-4 py-4 flex justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-900">Asiento <%= seat.seat_number %></p>
+            <p class="text-sm text-gray-500"><%= Seat::SEAT_CLASSES[seat.seat_class] || seat.seat_class %></p>
+          </div>
+          <p class="text-sm font-medium text-gray-900"><%= seat.formatted_price %></p>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<!-- Payment History -->
+<% if @reservation.payment_intents.any? %>
+  <div class="mt-6 bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Historial de Pagos</h3>
+    </div>
+    <table class="min-w-full divide-y divide-gray-300">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">ID</th>
+          <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Monto</th>
+          <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+          <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white">
+        <% @reservation.payment_intents.each do |pi| %>
+          <tr>
+            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500"><%= pi.external_id %></td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900"><%= pi.formatted_amount %></td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm">
+              <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
+                <%= pi.status == 'succeeded' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                <%= pi.status_label %>
+              </span>
+            </td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= pi.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

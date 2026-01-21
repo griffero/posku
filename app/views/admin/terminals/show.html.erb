@@ -1,0 +1,36 @@
+<div class="mb-8 flex justify-between items-center">
+  <h1 class="text-2xl font-bold text-gray-900"><%= @terminal.display_name %></h1>
+  <div class="space-x-2">
+    <%= link_to "Editar", edit_admin_terminal_path(@terminal), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+    <%= button_to "Eliminar", admin_terminal_path(@terminal), method: :delete, data: { confirm: "¿Estás seguro?" }, class: "rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500" %>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <dl class="divide-y divide-gray-200">
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Código</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @terminal.code %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @terminal.name %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Ciudad</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @terminal.city %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Coordenadas</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @terminal.latitude %>, <%= @terminal.longitude %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Estado</dt>
+      <dd class="mt-1 sm:col-span-2">
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= @terminal.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+          <%= @terminal.active? ? 'Activo' : 'Inactivo' %>
+        </span>
+      </dd>
+    </div>
+  </dl>
+</div>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-100">
+  <head>
+    <title>Admin - Posku</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="turbo-cache-control" content="no-cache">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body class="h-full">
+    <div class="min-h-full">
+      <!-- Navigation -->
+      <nav class="bg-indigo-600">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 items-center justify-between">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <span class="text-white text-xl font-bold">Posku Admin</span>
+              </div>
+              <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                  <%= link_to "Dashboard", admin_root_path, class: "#{current_page?(admin_root_path) ? 'bg-indigo-700' : 'hover:bg-indigo-500'} text-white rounded-md px-3 py-2 text-sm font-medium" %>
+                  <%= link_to "Terminales", admin_terminals_path, class: "#{request.path.start_with?('/admin/terminals') ? 'bg-indigo-700' : 'hover:bg-indigo-500'} text-white rounded-md px-3 py-2 text-sm font-medium" %>
+                  <%= link_to "Rutas", admin_routes_path, class: "#{request.path.start_with?('/admin/routes') ? 'bg-indigo-700' : 'hover:bg-indigo-500'} text-white rounded-md px-3 py-2 text-sm font-medium" %>
+                  <%= link_to "Buses", admin_buses_path, class: "#{request.path.start_with?('/admin/buses') ? 'bg-indigo-700' : 'hover:bg-indigo-500'} text-white rounded-md px-3 py-2 text-sm font-medium" %>
+                  <%= link_to "Viajes", admin_trips_path, class: "#{request.path.start_with?('/admin/trips') ? 'bg-indigo-700' : 'hover:bg-indigo-500'} text-white rounded-md px-3 py-2 text-sm font-medium" %>
+                  <%= link_to "Reservas", admin_reservations_path, class: "#{request.path.start_with?('/admin/reservations') ? 'bg-indigo-700' : 'hover:bg-indigo-500'} text-white rounded-md px-3 py-2 text-sm font-medium" %>
+                </div>
+              </div>
+            </div>
+            <div class="hidden md:block">
+              <div class="ml-4 flex items-center md:ml-6">
+                <%= link_to "Ver Sitio", root_path, class: "text-white hover:bg-indigo-500 rounded-md px-3 py-2 text-sm font-medium", target: "_blank" %>
+                <%= button_to "Cerrar Sesión", session_path, method: :delete, class: "text-white hover:bg-indigo-500 rounded-md px-3 py-2 text-sm font-medium" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Flash messages -->
+      <% if notice %>
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 mx-auto max-w-7xl mt-4">
+          <div class="flex">
+            <div class="ml-3">
+              <p class="text-sm text-green-700"><%= notice %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% if alert %>
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 mx-auto max-w-7xl mt-4">
+          <div class="flex">
+            <div class="ml-3">
+              <p class="text-sm text-red-700"><%= alert %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Main content -->
+      <main>
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<div class="sm:flex sm:items-center mb-8">
+  <div class="sm:flex-auto">
+    <h1 class="text-2xl font-bold text-gray-900">Reservas</h1>
+    <p class="mt-2 text-sm text-gray-700">Gestión de reservas de pasajes.</p>
+  </div>
+  <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+    <%= link_to "Exportar CSV", export_admin_reservations_path(format: :csv), class: "block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500" %>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white shadow rounded-lg p-4 mb-6">
+  <%= form_tag admin_reservations_path, method: :get, class: "flex flex-wrap gap-4 items-end" do %>
+    <div>
+      <%= label_tag :locator, "Código", class: "block text-sm font-medium text-gray-700" %>
+      <%= text_field_tag :locator, params[:locator], class: "mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "Ej: ABC123" %>
+    </div>
+    <div>
+      <%= label_tag :status, "Estado", class: "block text-sm font-medium text-gray-700" %>
+      <%= select_tag :status, options_for_select([["Todos", ""], ["Confirmado", "confirmed"], ["Reservado", "held"], ["Cancelado", "cancelled"], ["Expirado", "expired"]], params[:status]), class: "mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+    <div>
+      <%= label_tag :date, "Fecha viaje", class: "block text-sm font-medium text-gray-700" %>
+      <%= date_field_tag :date, params[:date], class: "mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+    <%= submit_tag "Filtrar", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+    <%= link_to "Limpiar", admin_reservations_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+  <% end %>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <table class="min-w-full divide-y divide-gray-300">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Código</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Ruta</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha Viaje</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Asientos</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Total</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+        <th class="relative py-3.5 pl-3 pr-4"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      <% @reservations.each do |reservation| %>
+        <tr>
+          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-indigo-600">
+            <%= link_to reservation.locator_code, admin_reservation_path(reservation) %>
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            <%= reservation.trip.route.origin_terminal.city %> →
+            <%= reservation.trip.route.destination_terminal.city %>
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            <%= reservation.trip.departure_at.strftime("%d/%m/%Y %H:%M") %>
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            <%= reservation.reservation_seats.count %>
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 font-medium">
+            <%= reservation.formatted_total %>
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm">
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
+              <%= case reservation.status
+                  when 'confirmed' then 'bg-green-100 text-green-800'
+                  when 'held' then 'bg-yellow-100 text-yellow-800'
+                  when 'cancelled' then 'bg-red-100 text-red-800'
+                  else 'bg-gray-100 text-gray-800'
+                  end %>">
+              <%= reservation.status_label %>
+            </span>
+          </td>
+          <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
+            <%= link_to "Ver", admin_reservation_path(reservation), class: "text-indigo-600 hover:text-indigo-900" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

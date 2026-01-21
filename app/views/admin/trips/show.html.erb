@@ -1,0 +1,64 @@
+<div class="mb-8 flex justify-between items-center">
+  <h1 class="text-2xl font-bold text-gray-900">Viaje #<%= @trip.id %></h1>
+  <div class="space-x-2">
+    <%= link_to "Ver Ocupación", occupancy_admin_trip_path(@trip), class: "rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500" %>
+    <%= link_to "Editar", edit_admin_trip_path(@trip), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <dl class="divide-y divide-gray-200">
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Ruta</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
+        <%= @trip.route.origin_terminal.display_name %> → <%= @trip.route.destination_terminal.display_name %>
+      </dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Salida</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @trip.departure_at.strftime("%d/%m/%Y %H:%M") %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Llegada</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @trip.arrival_at.strftime("%d/%m/%Y %H:%M") %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Bus</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @trip.bus.name %> - <%= @trip.bus.bus_type_label %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Asientos disponibles</dt>
+      <dd class="mt-1 text-sm text-gray-900 sm:col-span-2"><%= @trip.available_seats_count %> / <%= @trip.bus.total_seats %></dd>
+    </div>
+    <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <dt class="text-sm font-medium text-gray-500">Estado</dt>
+      <dd class="mt-1 sm:col-span-2">
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+          <%= @trip.status_label %>
+        </span>
+      </dd>
+    </div>
+  </dl>
+</div>
+
+<div class="mt-6 bg-white shadow rounded-lg overflow-hidden">
+  <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">Tarifas</h3>
+  </div>
+  <table class="min-w-full divide-y divide-gray-300">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Clase</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio Base</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      <% @trip.fares.each do |fare| %>
+        <tr>
+          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900"><%= Seat::SEAT_CLASSES[fare.seat_class] || fare.seat_class %></td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900"><%= fare.formatted_price %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

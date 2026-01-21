@@ -1,0 +1,43 @@
+<%= form_with model: [:admin, trip], class: "space-y-6" do |f| %>
+  <% if trip.errors.any? %>
+    <div class="bg-red-50 border-l-4 border-red-400 p-4">
+      <ul class="list-disc list-inside text-sm text-red-700">
+        <% trip.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div>
+      <%= f.label :route_id, "Ruta", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.collection_select :route_id, @routes, :id, ->(r) { "#{r.origin_terminal.city} → #{r.destination_terminal.city}" }, { prompt: "Seleccionar ruta" }, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :bus_id, "Bus", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.collection_select :bus_id, @buses, :id, ->(b) { "#{b.name} (#{b.bus_type_label})" }, { prompt: "Seleccionar bus" }, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :departure_at, "Fecha y hora de salida", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.datetime_local_field :departure_at, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :arrival_at, "Fecha y hora de llegada", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.datetime_local_field :arrival_at, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :status, "Estado", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :status, Trip::STATUSES.map { |k, v| [v, k] }, {}, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <%= link_to "Cancelar", admin_trips_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+    <%= f.submit "Guardar", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+  </div>
+<% end %>

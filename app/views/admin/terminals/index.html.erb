@@ -1,0 +1,40 @@
+<div class="sm:flex sm:items-center mb-8">
+  <div class="sm:flex-auto">
+    <h1 class="text-2xl font-bold text-gray-900">Terminales</h1>
+    <p class="mt-2 text-sm text-gray-700">Lista de todos los terminales de buses.</p>
+  </div>
+  <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+    <%= link_to "Nuevo Terminal", new_admin_terminal_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <table class="min-w-full divide-y divide-gray-300">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Código</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nombre</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Ciudad</th>
+        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+        <th class="relative py-3.5 pl-3 pr-4"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      <% @terminals.each do |terminal| %>
+        <tr>
+          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900"><%= terminal.code %></td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= terminal.name %></td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= terminal.city %></td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm">
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= terminal.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+              <%= terminal.active? ? 'Activo' : 'Inactivo' %>
+            </span>
+          </td>
+          <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
+            <%= link_to "Editar", edit_admin_terminal_path(terminal), class: "text-indigo-600 hover:text-indigo-900" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

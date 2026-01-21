@@ -1,0 +1,50 @@
+<%= form_with model: [:admin, terminal], class: "space-y-6" do |f| %>
+  <% if terminal.errors.any? %>
+    <div class="bg-red-50 border-l-4 border-red-400 p-4">
+      <ul class="list-disc list-inside text-sm text-red-700">
+        <% terminal.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div>
+      <%= f.label :name, "Nombre", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :city, "Ciudad", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.text_field :city, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :code, "Código (3 letras)", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.text_field :code, maxlength: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm uppercase" %>
+    </div>
+
+    <div>
+      <%= f.label :active, class: "flex items-center" do %>
+        <%= f.check_box :active, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+        <span class="ml-2 text-sm text-gray-700">Activo</span>
+      <% end %>
+    </div>
+
+    <div>
+      <%= f.label :latitude, "Latitud", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :latitude, step: "any", class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :longitude, "Longitud", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :longitude, step: "any", class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <%= link_to "Cancelar", admin_terminals_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+    <%= f.submit "Guardar", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+  </div>
+<% end %>
