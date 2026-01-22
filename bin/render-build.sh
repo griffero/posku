@@ -20,23 +20,13 @@ bundle exec rails assets:clean
 bundle exec rails db:migrate
 
 # Seed the database
-# Force re-seed if RESEED=true or if database is empty
+# ONE-TIME FORCE RESEED - Remove this after deploy!
 bundle exec rails runner "
-  force_reseed = ENV['RESEED'] == 'true'
-  
-  if force_reseed
-    puts 'Force re-seeding database...'
-    # Clear existing data
-    [PaymentIntent, Passenger, ReservationSeat, Reservation, Fare, Trip, Seat, Bus, Route, Terminal].each do |model|
-      model.delete_all rescue nil
-    end
-    Rails.application.load_seed
-    puts 'Database re-seeded!'
-  elsif Terminal.count == 0
-    puts 'Seeding database...'
-    Rails.application.load_seed
-    puts 'Database seeded!'
-  else
-    puts 'Database already has data. Set RESEED=true to force re-seed.'
+  puts 'Force re-seeding database with new routes...'
+  # Clear existing data (preserving users)
+  [PaymentIntent, Passenger, ReservationSeat, Reservation, Fare, Trip, Seat, Bus, Route, Terminal].each do |model|
+    model.delete_all rescue nil
   end
+  Rails.application.load_seed
+  puts 'Database re-seeded successfully!'
 "
