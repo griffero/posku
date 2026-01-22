@@ -19,14 +19,13 @@ bundle exec rails assets:clean
 # Run database migrations (includes Solid Queue tables)
 bundle exec rails db:migrate
 
-# Seed the database
-# ONE-TIME FORCE RESEED - Remove this after deploy!
+# Seed the database if empty
 bundle exec rails runner "
-  puts 'Force re-seeding database with new routes...'
-  # Clear existing data (preserving users)
-  [PaymentIntent, Passenger, ReservationSeat, Reservation, Fare, Trip, Seat, Bus, Route, Terminal].each do |model|
-    model.delete_all rescue nil
+  if Terminal.count == 0
+    puts 'Seeding database...'
+    Rails.application.load_seed
+    puts 'Database seeded!'
+  else
+    puts 'Database already has data, skipping seed.'
   end
-  Rails.application.load_seed
-  puts 'Database re-seeded successfully!'
 "

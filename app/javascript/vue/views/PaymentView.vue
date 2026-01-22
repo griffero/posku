@@ -1,113 +1,125 @@
 <template>
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-white rounded-lg shadow-md p-8">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-gray-900">Confirma tu pago</h1>
-        <p class="text-gray-600 mt-2">Código de reserva: <span class="font-mono font-bold">{{ locator }}</span></p>
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg">
+      <!-- Loading -->
+      <div v-if="loading && !paymentIntent" class="text-center py-12">
+        <div class="relative inline-block">
+          <div class="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
+          <div class="absolute top-0 left-0 w-16 h-16 border-4 border-indigo-600 rounded-full animate-spin border-t-transparent"></div>
+        </div>
+        <p class="mt-6 text-gray-600">Preparando pago...</p>
       </div>
 
-      <!-- Loading Payment Intent -->
-      <div v-if="loading && !paymentIntent" class="text-center py-8">
-        <svg class="animate-spin h-10 w-10 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-        </svg>
-        <p class="mt-4 text-gray-600">Preparando pago...</p>
-      </div>
+      <!-- Payment Card -->
+      <div v-else-if="paymentIntent" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8 text-center text-white">
+          <p class="text-indigo-200 text-sm uppercase tracking-wide">Código de reserva</p>
+          <p class="text-2xl font-mono font-bold mt-1">{{ locator }}</p>
+        </div>
 
-      <!-- Payment Status -->
-      <div v-else-if="paymentIntent">
         <!-- Pending Payment -->
-        <div v-if="paymentIntent.status === 'created' || paymentIntent.status === 'pending'" class="text-center">
-          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        <div v-if="['created', 'pending'].includes(paymentIntent.status)" class="p-6 sm:p-8">
+          <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-10 h-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <p class="text-gray-600 mb-2">Monto a pagar</p>
+            <p class="text-5xl font-bold text-gray-900">{{ paymentIntent.amount }}</p>
           </div>
 
-          <p class="text-xl font-medium text-gray-900 mb-2">Monto a pagar</p>
-          <p class="text-4xl font-bold text-indigo-600 mb-6">{{ paymentIntent.amount }}</p>
-
-          <!-- Mock Fintoc Payment -->
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <p class="text-sm text-gray-600 mb-4">
-              Este es un pago de prueba. En producción, aquí se mostraría el widget de Fintoc.
+          <!-- Mock Payment Buttons -->
+          <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <p class="text-sm text-gray-500 text-center mb-4">
+              Simulador de pago (Demo)
             </p>
             
             <div class="space-y-3">
               <button
                 @click="simulatePayment('succeeded')"
                 :disabled="processing"
-                class="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-300"
+                class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:from-emerald-600 hover:to-green-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
               >
-                {{ processing ? 'Procesando...' : 'Simular Pago Exitoso' }}
+                <svg v-if="processing" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <svg v-else class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {{ processing ? 'Procesando...' : 'Simular pago exitoso' }}
               </button>
+              
               <button
                 @click="simulatePayment('failed')"
                 :disabled="processing"
-                class="w-full py-3 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:bg-gray-300"
+                class="w-full py-3 px-6 bg-red-100 text-red-700 font-medium rounded-xl hover:bg-red-200 disabled:opacity-50 transition-colors"
               >
-                Simular Pago Fallido
+                Simular pago fallido
               </button>
             </div>
           </div>
 
-          <!-- Expiration -->
-          <p class="text-sm text-gray-500">
-            Este pago expira en {{ formatExpiration(paymentIntent.expires_at) }}
-          </p>
+          <!-- Expiration Timer -->
+          <div class="text-center text-sm text-gray-500">
+            <svg class="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Expira en {{ formatExpiration(paymentIntent.expires_at) }}
+          </div>
         </div>
 
         <!-- Payment Succeeded -->
-        <div v-else-if="paymentIntent.status === 'succeeded'" class="text-center">
-          <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        <div v-else-if="paymentIntent.status === 'succeeded'" class="p-6 sm:p-8 text-center">
+          <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 class="text-2xl font-bold text-green-600 mb-2">¡Pago confirmado!</h2>
-          <p class="text-gray-600 mb-6">Tu compra ha sido procesada exitosamente.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">¡Pago confirmado!</h2>
+          <p class="text-gray-600 mb-8">Tu compra ha sido procesada exitosamente</p>
           
           <button
             @click="goToConfirmation"
-            class="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+            class="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 transition-all"
           >
             Ver mi pasaje
           </button>
         </div>
 
         <!-- Payment Failed -->
-        <div v-else-if="paymentIntent.status === 'failed'" class="text-center">
+        <div v-else-if="paymentIntent.status === 'failed'" class="p-6 sm:p-8 text-center">
           <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg class="w-10 h-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 class="text-2xl font-bold text-red-600 mb-2">Pago fallido</h2>
-          <p class="text-gray-600 mb-6">No pudimos procesar tu pago. Por favor, intenta de nuevo.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Pago rechazado</h2>
+          <p class="text-gray-600 mb-8">No pudimos procesar tu pago. Intenta nuevamente.</p>
           
           <button
             @click="$router.push({ name: 'checkout', params: { locator } })"
-            class="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+            class="w-full py-4 px-6 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
           >
             Intentar de nuevo
           </button>
         </div>
 
         <!-- Payment Expired -->
-        <div v-else-if="paymentIntent.status === 'expired'" class="text-center">
-          <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div v-else-if="paymentIntent.status === 'expired'" class="p-6 sm:p-8 text-center">
+          <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 class="text-2xl font-bold text-yellow-600 mb-2">Pago expirado</h2>
-          <p class="text-gray-600 mb-6">El tiempo para completar el pago ha expirado.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Tiempo agotado</h2>
+          <p class="text-gray-600 mb-8">El tiempo para completar el pago ha expirado</p>
           
           <button
             @click="$router.push('/')"
-            class="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+            class="w-full py-4 px-6 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
           >
             Volver al inicio
           </button>
@@ -115,9 +127,16 @@
       </div>
 
       <!-- Error -->
-      <div v-else-if="error" class="text-center py-8">
-        <p class="text-red-600">{{ error }}</p>
-        <button @click="$router.push('/')" class="mt-4 text-indigo-600">Volver al inicio</button>
+      <div v-else-if="error" class="bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p class="text-red-600 mb-6">{{ error }}</p>
+        <button @click="$router.push('/')" class="text-indigo-600 font-medium hover:underline">
+          Volver al inicio
+        </button>
       </div>
     </div>
   </div>
@@ -141,15 +160,12 @@ const error = computed(() => reservationStore.error)
 const paymentIntent = computed(() => reservationStore.paymentIntent)
 
 onMounted(async () => {
-  // Load reservation to get payment intent
   const reservation = await reservationStore.loadReservation(locator.value)
   
-  // If reservation has payment_intent, set it in the store
   if (reservation?.payment_intent) {
     reservationStore.paymentIntent = reservation.payment_intent
   }
   
-  // Poll for payment status changes
   if (paymentIntent.value && ['created', 'pending'].includes(paymentIntent.value.status)) {
     pollInterval = setInterval(async () => {
       await reservationStore.checkPaymentStatus(paymentIntent.value.id)
@@ -182,7 +198,6 @@ async function simulatePayment(eventType) {
     await reservationStore.simulatePayment(paymentIntent.value.id, eventType)
     
     if (eventType === 'succeeded') {
-      // Redirect to confirmation after short delay
       setTimeout(() => {
         router.push({ name: 'confirmation', params: { locator: locator.value } })
       }, 1500)
