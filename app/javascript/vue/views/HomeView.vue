@@ -326,10 +326,26 @@ function handleSearch() {
 }
 
 function selectRoute(route) {
-  searchParams.value.origin = route.originCode
-  searchParams.value.destination = route.destCode
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
-  searchParams.value.date = tomorrow.toISOString().split('T')[0]
+  const date = tomorrow.toISOString().split('T')[0]
+  
+  // Set params and navigate directly to search
+  searchStore.setSearchParams({
+    origin: route.originCode,
+    destination: route.destCode,
+    date: date,
+    passengers: 1
+  })
+  
+  router.push({ 
+    name: 'search',
+    query: {
+      origin: route.originCode,
+      destination: route.destCode,
+      date: date,
+      passengers: 1
+    }
+  })
 }
 </script>
