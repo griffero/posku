@@ -3,15 +3,40 @@
 module Api
   class TripsController < BaseController
     def search
-      origin = Terminal.find_by!(code: params[:origin])
-      destination = Terminal.find_by!(code: params[:destination])
+      origin = Terminal.find_by(code: params[:origin])
+      destination = Terminal.find_by(code: params[:destination])
+      
+      unless origin
+        render json: { error: "Terminal de origen no encontrado" }, status: :not_found
+        return
+      end
+      
+      unless destination
+        render json: { error: "Terminal de destino no encontrado" }, status: :not_found
+        return
+      end
+
       date = Date.parse(params[:date])
       passengers = (params[:passengers] || 1).to_i
 
-      route = Route.active.find_by!(
+      route = Route.active.find_by(
         origin_terminal: origin,
         destination_terminal: destination
       )
+
+      unless route
+        render json: {
+          search: {
+            origin: terminal_json(origin),
+            destination: terminal_json(destination),
+            date: date,
+            passengers: passengers
+          },
+          trips: [],
+          message: "No hay rutas disponibles entre #{origin.city} y #{destination.city}"
+        }
+        return
+      end
 
       trips = Trip.scheduled
                   .where(route: route)
